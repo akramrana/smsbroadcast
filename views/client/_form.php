@@ -6,6 +6,13 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\models\Clients */
 /* @var $form yii\widgets\ActiveForm */
+if(!$model->isNewRecord){
+    $model->business_name =  trim($model->business_name);
+    $model->email =  trim($model->email);
+    $model->business_address =  trim($model->business_address);
+    $model->representative_name =  trim($model->representative_name);
+    $model->phone =  trim($model->phone);
+}
 ?>
 
 <div class="clients-form">
