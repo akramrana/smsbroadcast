@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ClientSubscriptionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Client Subscriptions';
+$this->title = 'Client Payment';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-subscriptions-index">
@@ -15,30 +15,47 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Client Subscriptions', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'client_subscription_id',
-            'client_id',
+            [
+                'attribute' => 'client_id',
+                'value' => function($model) {
+                    return $model->client->business_name;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
             'amount',
             'sms_charge',
             'total_sms',
             //'created_at',
-            //'payment_method',
-            //'payment_status',
+            [
+                'attribute' => 'payment_method',
+                'value' => function($model) {
+                    return (trim($model->payment_method)=="B")?"Bkash":((trim($model->payment_method)=="C")?"Cash":"Cheque");
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'payment_method', ['B' => 'Bkash','C' => 'Cash','CH' => 'Cheque'], ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
+            [
+                'attribute' => 'payment_status',
+                'value' => function($model) {
+                    return ($model->payment_status == 1) ? "Paid" : "Not Paid";
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'payment_status', ['0' => 'Unpaid', '1' => 'Paid'], ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
             //'comments:ntext',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]);
+    ?>
 
 
 </div>

@@ -33,8 +33,8 @@ class ClientNumbers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['client_number_id', 'client_id', 'number', 'created_at'], 'required'],
-            [['client_number_id', 'client_id'], 'integer'],
+            [['client_id', 'number', 'created_at'], 'required'],
+            [['client_id'], 'integer'],
             [['created_at'], 'safe'],
             [['name'], 'string', 'max' => 48],
             [['number'], 'string', 'max' => 32],
@@ -49,7 +49,7 @@ class ClientNumbers extends \yii\db\ActiveRecord
     {
         return [
             'client_number_id' => 'Client Number ID',
-            'client_id' => 'Client ID',
+            'client_id' => 'Client',
             'name' => 'Name',
             'number' => 'Number',
             'created_at' => 'Created At',

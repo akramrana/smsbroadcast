@@ -52,7 +52,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
     {
         return [
             'client_campaign_id' => 'Client Campaign ID',
-            'client_id' => 'Client ID',
+            'client_id' => 'Client',
             'campaign_name' => 'Campaign Name',
             'from_number' => 'From Number',
             'message' => 'Message',

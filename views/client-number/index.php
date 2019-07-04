@@ -15,26 +15,30 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Client Numbers', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Add Number', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'client_number_id',
-            'client_id',
-            'name',
+            [
+                'attribute' => 'client_id',
+                'value' => function($model) {
+                    return $model->client->business_name;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
             'number',
-            'created_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            'name',
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{update} {delete}'],
         ],
-    ]); ?>
+    ]);
+    ?>
 
 
 </div>

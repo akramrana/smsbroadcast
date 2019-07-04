@@ -52,7 +52,7 @@ class ClientSubscriptions extends \yii\db\ActiveRecord
     {
         return [
             'client_subscription_id' => 'Client Subscription ID',
-            'client_id' => 'Client ID',
+            'client_id' => 'Client',
             'amount' => 'Amount',
             'sms_charge' => 'Sms Charge',
             'total_sms' => 'Total Sms',

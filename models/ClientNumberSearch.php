@@ -46,6 +46,7 @@ class ClientNumberSearch extends ClientNumbers
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['client_number_id' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -61,6 +62,7 @@ class ClientNumberSearch extends ClientNumbers
             'client_number_id' => $this->client_number_id,
             'client_id' => $this->client_id,
             'created_at' => $this->created_at,
+            'is_deleted' => 0
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])

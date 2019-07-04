@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\ClientSubscriptions */
 
-$this->title = 'Update Client Subscriptions: ' . $model->client_subscription_id;
-$this->params['breadcrumbs'][] = ['label' => 'Client Subscriptions', 'url' => ['index']];
+$this->title = 'Update Client Payment: #' . $model->client_subscription_id;
+$this->params['breadcrumbs'][] = ['label' => 'Client Payment', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->client_subscription_id, 'url' => ['view', 'id' => $model->client_subscription_id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

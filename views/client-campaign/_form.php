@@ -12,21 +12,21 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
+        <div class="col-md-6">  
+            <?= $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(),[
+                'prompt' => 'Please Select',
+                'class' => 'form-control'
+            ]) ?> 
+        </div>
+        <span class="clearfix">&nbsp;</span>
+        <div class="col-md-6">  
+            <?= $form->field($model, 'campaign_name')->textInput(['maxlength' => true]) ?> 
 
-  <div class="col-md-6">  <?= $form->field($model, 'client_id')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'campaign_name')->textInput(['maxlength' => true]) ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'from_number')->textInput(['maxlength' => true]) ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'message')->textarea(['rows' => 6]) ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'character_count')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'created_at')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'campaign_type')->textInput(['maxlength' => true]) ?> </div>
-
+            <?= $form->field($model, 'message')->textarea(['rows' => 6,'maxlength' => 140]) ?> 
+        </div>
+        <div class="col-md-6">  
+            <?= $form->field($model, 'from_number')->textInput(['maxlength' => true]) ?> 
+        </div>
     </div>
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

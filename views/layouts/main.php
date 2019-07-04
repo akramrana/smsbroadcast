@@ -41,10 +41,10 @@ AppAsset::register($this);
             ['label' => 'Admin', 'url' => ['/admin/index'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Client', 'url' => ['/client/index'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Campaign', 'url' => ['/client-campaign/index'],'visible' => !Yii::$app->user->isGuest],
-            ['label' => 'Group', 'url' => ['/client-group/index'],'visible' => !Yii::$app->user->isGuest],
+            //['label' => 'Group', 'url' => ['/client-group/index'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Number', 'url' => ['/client-number/index'],'visible' => !Yii::$app->user->isGuest],
-            ['label' => 'SMS Template', 'url' => ['/client-sms-template/index'],'visible' => !Yii::$app->user->isGuest],
-            ['label' => 'Subscription', 'url' => ['/client-subscription/index'],'visible' => !Yii::$app->user->isGuest],
+            //['label' => 'SMS Template', 'url' => ['/client-sms-template/index'],'visible' => !Yii::$app->user->isGuest],
+            ['label' => 'Payment', 'url' => ['/client-subscription/index'],'visible' => !Yii::$app->user->isGuest],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (

@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\ClientSubscriptions */
 
-$this->title = $model->client_subscription_id;
+$this->title = '#' . $model->client_subscription_id;
 $this->params['breadcrumbs'][] = ['label' => 'Client Subscriptions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -17,28 +17,40 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->client_subscription_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->client_subscription_id], [
+        <?=
+        Html::a('Delete', ['delete', 'id' => $model->client_subscription_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ])
+        ?>
     </p>
 
-    <?= DetailView::widget([
+    <?=
+    DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'client_subscription_id',
-            'client_id',
+            [
+                'attribute' => 'client_id',
+                'value' => $model->client->business_name,
+            ],
             'amount',
             'sms_charge',
             'total_sms',
             'created_at',
-            'payment_method',
-            'payment_status',
+            [
+                'attribute' => 'payment_method',
+                'value' => (trim($model->payment_method)=="B")?"Bkash":((trim($model->payment_method)=="C")?"Cash":"Cheque"),
+            ],
+            [
+                'attribute' => 'payment_status',
+                'value' => ($model->payment_status==1)?"Paid":"Not Paid",
+            ],
             'comments:ntext',
         ],
-    ]) ?>
+    ])
+    ?>
 
 </div>

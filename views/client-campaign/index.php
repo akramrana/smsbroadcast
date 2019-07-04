@@ -25,13 +25,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'client_campaign_id',
-            'client_id',
+            [
+                'attribute' => 'client_id',
+                'value' => function($model) {
+                    return $model->client->business_name;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
             'campaign_name',
             'from_number',
             'message:ntext',
-            //'character_count',
+            'character_count',
             //'created_at',
             //'campaign_type',
 

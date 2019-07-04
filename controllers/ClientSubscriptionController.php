@@ -12,13 +12,12 @@ use yii\filters\VerbFilter;
 /**
  * ClientSubscriptionController implements the CRUD actions for ClientSubscriptions model.
  */
-class ClientSubscriptionController extends Controller
-{
+class ClientSubscriptionController extends Controller {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -33,14 +32,13 @@ class ClientSubscriptionController extends Controller
      * Lists all ClientSubscriptions models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new ClientSubscriptionSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -50,10 +48,9 @@ class ClientSubscriptionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -62,16 +59,27 @@ class ClientSubscriptionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new ClientSubscriptions();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->client_subscription_id]);
+        $model->created_at = date('Y-m-d H:i:s');
+        $model->is_deleted = 0;
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                $clientModel = \app\models\Clients::findOne($model->client_id);
+                $oldSmsCount = (trim($clientModel->total_sms) != "") ? trim($clientModel->total_sms) : 0;
+                $newCount = $oldSmsCount + $model->total_sms;
+                $clientModel->total_sms = $newCount;
+                $clientModel->save(false);
+                Yii::$app->session->setFlash('success', 'Payment successfully added');
+                return $this->redirect(['index']);
+            } else {
+                return $this->render('create', [
+                            'model' => $model,
+                ]);
+            }
         }
-
         return $this->render('create', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -82,16 +90,14 @@ class ClientSubscriptionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->client_subscription_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->session->setFlash('success', 'Payment successfully updated');
+            return $this->redirect(['index']);
         }
-
         return $this->render('update', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -102,10 +108,12 @@ class ClientSubscriptionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    public function actionDelete($id) {
+        $model = $this->findModel($id);
+        $model->is_deleted = 1;
+        $model->save();
 
+        Yii::$app->session->setFlash('success', 'Payment successfully deleted');
         return $this->redirect(['index']);
     }
 
@@ -116,12 +124,12 @@ class ClientSubscriptionController extends Controller
      * @return ClientSubscriptions the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = ClientSubscriptions::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }

@@ -47,6 +47,7 @@ class ClientSubscriptionSearch extends ClientSubscriptions
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['client_subscription_id' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -66,6 +67,7 @@ class ClientSubscriptionSearch extends ClientSubscriptions
             'total_sms' => $this->total_sms,
             'created_at' => $this->created_at,
             'payment_status' => $this->payment_status,
+            'is_deleted' => 0,
         ]);
 
         $query->andFilterWhere(['like', 'payment_method', $this->payment_method])
