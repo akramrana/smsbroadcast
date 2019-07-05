@@ -109,6 +109,37 @@ class ClientCampaignController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionGetNumbers()
+    {
+        $requestData = Yii::$app->request->queryParams;
+        $query = \app\models\ClientNumbers::find()
+                ->where(['is_deleted' => 0])
+                ->orderBy(['created_at' => SORT_DESC]);
+        $data = $query->all();
+        $totalData = count($data);
+        $totalFiltered = count($data);
+        $query->limit($requestData['length']);
+        $query->offset($requestData['start']);
+        $result = $query->all();
+        $resultSet = [];
+        $i = 0;
+        foreach ($result as $key => $model) {
+            $nestedData = array();
+            $nestedData[] = $model->client_number_id;
+            $nestedData[] = $model->number;
+            $nestedData[] = $model->name;
+            $resultSet[] = $nestedData;
+            $i++;
+        }
+        $json_data = array(
+            "draw" => intval($requestData['draw']),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data" => $resultSet
+        );
+        return json_encode($json_data);
+    }
+
     /**
      * Finds the ClientCampaigns model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
