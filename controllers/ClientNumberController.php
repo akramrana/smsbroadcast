@@ -8,6 +8,7 @@ use app\models\ClientNumberSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * ClientNumberController implements the CRUD actions for ClientNumbers model.
@@ -102,6 +103,66 @@ class ClientNumberController extends Controller {
         $model->save();
         Yii::$app->session->setFlash('success', 'Number successfully deleted');
         return $this->redirect(['index']);
+    }
+
+    public function actionImport() {
+        $model = new \app\models\ExcelUpload();
+        if ($model->load(Yii::$app->request->post())) {
+            $excelFile = UploadedFile::getInstance($model, 'file');
+            $directory = \Yii::getAlias('@app/web/uploads') . DIRECTORY_SEPARATOR;
+            if ($excelFile) {
+                $filetype = mime_content_type($excelFile->tempName);
+                $allowed = array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                if (!in_array(strtolower($filetype), $allowed)) {
+                    Yii::$app->session->setFlash('error', 'File type not supported');
+                } else {
+                    $uid = uniqid(time(), true);
+                    $fileName = $uid . '.' . $excelFile->extension;
+                    $filePath = $directory . $fileName;
+                    if ($excelFile->saveAs($filePath)) {
+                        $path = $directory . $fileName;
+                        $objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+                        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+                        $processedCount = 0;
+                        $time_start = microtime(true);
+                        for ($i = 2; $i <= count($sheetData); $i++) {
+                            $phone = $sheetData[$i]['A'];
+                            $name = $sheetData[$i]['B'];
+
+                            $clientNumberModel = ClientNumbers::find()
+                                    ->where(['client_id' => $model->client_id, 'number' => $phone,'is_deleted' => 0])
+                                    ->one();
+                            if (empty($clientNumberModel)) {
+                                $clientNumberModel = new ClientNumbers();
+                                $clientNumberModel->client_id = $model->client_id;
+                                $clientNumberModel->number = $phone;
+                                $clientNumberModel->name = $name;
+                                $clientNumberModel->created_at = date('Y-m-d H:i:s');
+                            } else {
+                                $clientNumberModel->number = $phone;
+                                $clientNumberModel->name = $name;
+                            }
+                            if ($clientNumberModel->save()) {
+                                $processedCount++;
+                            }else{
+                                die(json_encode($clientNumberModel->errors));
+                            }
+                        }
+                        $time_end = microtime(true);
+                        $execution_time = ($time_end - $time_start) / 60;
+                        if ($processedCount > 0) {
+                            Yii::$app->session->setFlash('success', "Excel imported successfully total '$processedCount' row processed.Total Execution Time: " . $execution_time . ' Min(s)');
+                        } else {
+                            Yii::$app->session->setFlash('warning', "No new number has been imported");
+                        }
+                    }
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+        return $this->render('import', [
+                    'model' => $model,
+        ]);
     }
 
     /**
