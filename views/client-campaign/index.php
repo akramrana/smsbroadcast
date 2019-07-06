@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) {
                     return $model->client->business_name;
                 },
+                'visible' => (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? true : false,
                 'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             'campaign_name',
@@ -44,22 +45,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{view} {update} {delete}',
                 'buttons' => [
                     'update' => function($url, $model) {
-                        if($model->is_publish==0){
-                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>',$url,[
-                                'title' => 'Update',
-                                'aria-label' => 'Update',
-                                'data-pjax' => '0',
+                        if ($model->is_publish == 0) {
+                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                                        'title' => 'Update',
+                                        'aria-label' => 'Update',
+                                        'data-pjax' => '0',
                             ]);
                         }
                     },
                     'delete' => function($url, $model) {
-                        if($model->is_publish==0){
-                            return Html::a('<span class="glyphicon glyphicon-trash"></span>',$url,[
-                                'title' => 'Delete',
-                                'aria-label' => 'Delete',
-                                'data-pjax' => '0',
-                                'data-confirm' => 'Are you sure you want to delete this item?',
-                                'data-method' => 'post',
+                        if ($model->is_publish == 0) {
+                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                                        'title' => 'Delete',
+                                        'aria-label' => 'Delete',
+                                        'data-pjax' => '0',
+                                        'data-confirm' => 'Are you sure you want to delete this item?',
+                                        'data-method' => 'post',
                             ]);
                         }
                     },

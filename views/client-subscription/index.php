@@ -12,8 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $actionBtn = '';
 if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
     $actionBtn = '{view} {update} delete';
-}
-else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+} else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
     $actionBtn = '{view}';
 }
 ?>
@@ -22,10 +21,10 @@ else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1)?Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']):"" ?>
+        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']) : "" ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
 
     <?=
     GridView::widget([
@@ -38,6 +37,7 @@ else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
                 'value' => function($model) {
                     return $model->client->business_name;
                 },
+                'visible' => (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? true : false,
                 'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             'amount',
@@ -47,9 +47,9 @@ else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
             [
                 'attribute' => 'payment_method',
                 'value' => function($model) {
-                    return (trim($model->payment_method)=="B")?"Bkash":((trim($model->payment_method)=="C")?"Cash":"Cheque");
+                    return (trim($model->payment_method) == "B") ? "Bkash" : ((trim($model->payment_method) == "C") ? "Cash" : "Cheque");
                 },
-                'filter' => Html::activeDropDownList($searchModel, 'payment_method', ['B' => 'Bkash','C' => 'Cash','CH' => 'Cheque'], ['class' => 'form-control', 'prompt' => 'Filter']),
+                'filter' => Html::activeDropDownList($searchModel, 'payment_method', ['B' => 'Bkash', 'C' => 'Cash', 'CH' => 'Cheque'], ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             [
                 'attribute' => 'payment_status',
@@ -59,7 +59,7 @@ else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
                 'filter' => Html::activeDropDownList($searchModel, 'payment_status', ['0' => 'Unpaid', '1' => 'Paid'], ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             //'comments:ntext',
-            ['class' => 'yii\grid\ActionColumn','template' => $actionBtn],
+            ['class' => 'yii\grid\ActionColumn', 'template' => $actionBtn],
         ],
     ]);
     ?>

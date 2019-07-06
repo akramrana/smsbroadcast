@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) {
                     return $model->client->business_name;
                 },
+                'visible' => (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? true : false,
                 'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             'number',
