@@ -53,7 +53,11 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'clients' => 'site/client-login'
             ],
+        ],
+        'auth' => [
+            'class' => 'app\components\Auth',
         ],
     ],
     'params' => $params,

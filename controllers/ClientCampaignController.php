@@ -9,6 +9,10 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
+use yii\filters\AccessControl;
+use app\components\UserIdentity;
+use app\components\AccessRule;
+
 /**
  * ClientCampaignController implements the CRUD actions for ClientCampaigns model.
  */
@@ -23,6 +27,29 @@ class ClientCampaignController extends Controller {
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'roles' => [
+                            UserIdentity::ROLE_ADMIN
+                        ]
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'roles' => [
+                            UserIdentity::ROLE_CLIENT
+                        ]
+                    ],
                 ],
             ],
         ];
@@ -49,8 +76,14 @@ class ClientCampaignController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id) {
+        $model = $this->findModel($id);
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         return $this->render('view', [
-                    'model' => $this->findModel($id),
+                    'model' => $model,
         ]);
     }
 
@@ -61,6 +94,9 @@ class ClientCampaignController extends Controller {
      */
     public function actionCreate() {
         $model = new ClientCampaigns();
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $model->client_id = Yii::$app->user->identity->client_id;
+        }
         $model->scenario = 'create';
         if ($model->load(Yii::$app->request->post())) {
             $request = Yii::$app->request->bodyParams;
@@ -103,10 +139,15 @@ class ClientCampaignController extends Controller {
         if ($model->is_publish == 1) {
             throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
         }
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         $model->scenario = 'update';
         if ($model->load(Yii::$app->request->post())) {
             $request = Yii::$app->request->bodyParams;
-            \app\models\ClientCampaignNumbers::deleteAll('client_campaign_id = '.$model->client_campaign_id);
+            \app\models\ClientCampaignNumbers::deleteAll('client_campaign_id = ' . $model->client_campaign_id);
             if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
                 foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
                     $campaignNumner = new \app\models\ClientCampaignNumbers();
@@ -141,6 +182,11 @@ class ClientCampaignController extends Controller {
         if ($model->is_publish == 1) {
             throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
         }
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         $model->is_deleted = 1;
         $model->save();
         Yii::$app->session->setFlash('success', 'Campaign successfully deleted');
@@ -162,8 +208,12 @@ class ClientCampaignController extends Controller {
                 ]
             ]);
         }
-        if ($client_id != null) {
-            $query->andWhere(['client_id' => $client_id]);
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            if ($client_id != null) {
+                $query->andWhere(['client_id' => $client_id]);
+            }
+        } else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
         }
         $data = $query->all();
         $totalData = count($data);

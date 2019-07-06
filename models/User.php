@@ -10,6 +10,16 @@ use yii\base\NotSupportedException;
 class User extends ActiveRecord implements IdentityInterface
 {
     public $auth_key;
+    public $client_id;
+    public $business_name;
+    public $representative_name;
+    public $business_address;
+    public $total_sms;
+    public $created_at;
+    public $updated_at;
+    public $has_own_gateway;
+    public $gateway_username;
+    public $gateway_password;
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
 
@@ -29,6 +39,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
             return static::findOne(['admin_id' => $id, 'is_active' => self::STATUS_ACTIVE,'is_deleted' => self::STATUS_DELETED]);
+        }
+        elseif (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $dbUser = Clients::find()->where(['client_id' => $id, 'is_active' => self::STATUS_ACTIVE,'is_deleted' => self::STATUS_DELETED])->one();
+            return new static($dbUser);
         }
     }
 

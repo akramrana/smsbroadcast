@@ -16,15 +16,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->client_subscription_id], ['class' => 'btn btn-primary']) ?>
+        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1)?Html::a('Update', ['update', 'id' => $model->client_subscription_id], ['class' => 'btn btn-primary']):"" ?>
         <?=
-        Html::a('Delete', ['delete', 'id' => $model->client_subscription_id], [
+        (\Yii::$app->session['_smsbroadcastAuth'] == 1)?Html::a('Delete', ['delete', 'id' => $model->client_subscription_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ])
+        ]):"";
         ?>
     </p>
 

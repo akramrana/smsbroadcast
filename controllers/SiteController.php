@@ -85,6 +85,23 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+    
+    public function actionClientLogin()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->login(2)) {
+            return $this->goBack();
+        }
+
+        $model->password = '';
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
 
     /**
      * Logout action.

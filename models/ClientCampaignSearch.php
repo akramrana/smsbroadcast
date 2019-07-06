@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ClientCampaigns;
@@ -60,7 +61,7 @@ class ClientCampaignSearch extends ClientCampaigns
         // grid filtering conditions
         $query->andFilterWhere([
             'client_campaign_id' => $this->client_campaign_id,
-            'client_id' => $this->client_id,
+            //'client_id' => $this->client_id,
             'character_count' => $this->character_count,
             'created_at' => $this->created_at,
             'is_deleted' => 0
@@ -70,6 +71,13 @@ class ClientCampaignSearch extends ClientCampaigns
             ->andFilterWhere(['like', 'from_number', $this->from_number])
             ->andFilterWhere(['like', 'message', $this->message])
             ->andFilterWhere(['like', 'campaign_type', $this->campaign_type]);
+        
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            $query->andFilterWhere(['client_id' => $this->client_id]);
+        }
+        else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
+        }
 
         return $dataProvider;
     }

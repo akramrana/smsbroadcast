@@ -9,6 +9,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use yii\filters\AccessControl;
+use app\components\UserIdentity;
+use app\components\AccessRule;
 
 /**
  * ClientNumberController implements the CRUD actions for ClientNumbers model.
@@ -24,6 +27,29 @@ class ClientNumberController extends Controller {
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'only' => ['index', 'view', 'create', 'update', 'delete', 'import'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'import'],
+                        'roles' => [
+                            UserIdentity::ROLE_ADMIN
+                        ]
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'import'],
+                        'roles' => [
+                            UserIdentity::ROLE_CLIENT
+                        ]
+                    ],
                 ],
             ],
         ];
@@ -50,8 +76,14 @@ class ClientNumberController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id) {
+        $model = $this->findModel($id);
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         return $this->render('view', [
-                    'model' => $this->findModel($id),
+                    'model' => $model,
         ]);
     }
 
@@ -62,6 +94,9 @@ class ClientNumberController extends Controller {
      */
     public function actionCreate() {
         $model = new ClientNumbers();
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $model->client_id = Yii::$app->user->identity->client_id;
+        }
         $model->created_at = date('Y-m-d H:i:s');
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', 'Number successfully added');
@@ -81,6 +116,11 @@ class ClientNumberController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', 'Number successfully updated');
             return $this->redirect(['index']);
@@ -99,6 +139,11 @@ class ClientNumberController extends Controller {
      */
     public function actionDelete($id) {
         $model = $this->findModel($id);
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
         $model->is_deleted = 1;
         $model->save();
         Yii::$app->session->setFlash('success', 'Number successfully deleted');
@@ -107,6 +152,9 @@ class ClientNumberController extends Controller {
 
     public function actionImport() {
         $model = new \app\models\ExcelUpload();
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $model->client_id = Yii::$app->user->identity->client_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             $excelFile = UploadedFile::getInstance($model, 'file');
             $directory = \Yii::getAlias('@app/web/uploads') . DIRECTORY_SEPARATOR;
@@ -130,7 +178,7 @@ class ClientNumberController extends Controller {
                             $name = $sheetData[$i]['B'];
 
                             $clientNumberModel = ClientNumbers::find()
-                                    ->where(['client_id' => $model->client_id, 'number' => $phone,'is_deleted' => 0])
+                                    ->where(['client_id' => $model->client_id, 'number' => $phone, 'is_deleted' => 0])
                                     ->one();
                             if (empty($clientNumberModel)) {
                                 $clientNumberModel = new ClientNumbers();
@@ -144,7 +192,7 @@ class ClientNumberController extends Controller {
                             }
                             if ($clientNumberModel->save()) {
                                 $processedCount++;
-                            }else{
+                            } else {
                                 die(json_encode($clientNumberModel->errors));
                             }
                         }

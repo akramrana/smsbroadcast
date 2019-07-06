@@ -8,7 +8,9 @@ use app\models\ClientSubscriptionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\filters\AccessControl;
+use app\components\UserIdentity;
+use app\components\AccessRule;
 /**
  * ClientSubscriptionController implements the CRUD actions for ClientSubscriptions model.
  */
@@ -25,6 +27,30 @@ class ClientSubscriptionController extends Controller {
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className(),
+                ],
+                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'roles' => [
+                            UserIdentity::ROLE_ADMIN
+                        ]
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'roles' => [
+                            UserIdentity::ROLE_CLIENT
+                        ]
+                    ],
+                ],
+            ],
+            
         ];
     }
 

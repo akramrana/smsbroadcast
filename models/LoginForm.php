@@ -78,6 +78,13 @@ class LoginForm extends Model {
                     $this->_user = $user;
                 }
             }
+            else if ($this->type == 2) {
+                $client = AuthClient::findByUsername($this->username);
+                if (!empty($client)) {
+                    \Yii::$app->session->set('_smsbroadcastUserRole', 2);                    
+                    $this->_user = $client;
+                }
+            }
         }
 
         return $this->_user;

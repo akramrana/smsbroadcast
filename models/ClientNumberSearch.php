@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ClientNumbers;
@@ -60,13 +61,20 @@ class ClientNumberSearch extends ClientNumbers
         // grid filtering conditions
         $query->andFilterWhere([
             'client_number_id' => $this->client_number_id,
-            'client_id' => $this->client_id,
+            //'client_id' => $this->client_id,
             'created_at' => $this->created_at,
             'is_deleted' => 0
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'number', $this->number]);
+        
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            $query->andFilterWhere(['client_id' => $this->client_id]);
+        }
+        else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
+        }
 
         return $dataProvider;
     }

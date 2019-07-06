@@ -9,13 +9,20 @@ use yii\grid\GridView;
 
 $this->title = 'Client Payment';
 $this->params['breadcrumbs'][] = $this->title;
+$actionBtn = '';
+if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+    $actionBtn = '{view} {update} delete';
+}
+else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+    $actionBtn = '{view}';
+}
 ?>
 <div class="client-subscriptions-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1)?Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']):"" ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -52,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Html::activeDropDownList($searchModel, 'payment_status', ['0' => 'Unpaid', '1' => 'Paid'], ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
             //'comments:ntext',
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn','template' => $actionBtn],
         ],
     ]);
     ?>

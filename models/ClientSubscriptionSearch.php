@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ClientSubscriptions;
@@ -42,7 +43,6 @@ class ClientSubscriptionSearch extends ClientSubscriptions
     public function search($params)
     {
         $query = ClientSubscriptions::find();
-
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -61,7 +61,7 @@ class ClientSubscriptionSearch extends ClientSubscriptions
         // grid filtering conditions
         $query->andFilterWhere([
             'client_subscription_id' => $this->client_subscription_id,
-            'client_id' => $this->client_id,
+            //'client_id' => $this->client_id,
             'amount' => $this->amount,
             'sms_charge' => $this->sms_charge,
             'total_sms' => $this->total_sms,
@@ -72,6 +72,13 @@ class ClientSubscriptionSearch extends ClientSubscriptions
 
         $query->andFilterWhere(['like', 'payment_method', $this->payment_method])
             ->andFilterWhere(['like', 'comments', $this->comments]);
+        
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            $query->andFilterWhere(['client_id' => $this->client_id]);
+        }
+        else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
+        }
 
         return $dataProvider;
     }

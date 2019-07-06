@@ -18,15 +18,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-md-6">  
-            <?=
-            $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(), [
-                'prompt' => 'Please Select',
-                'class' => 'form-control'
-            ])
-            ?> 
-        </div>
-        <span class="clearfix">&nbsp;</span>
+        <?php
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            ?>
+            <div class="col-md-6">  
+                <?=
+                $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(), [
+                    'prompt' => 'Please Select',
+                    'class' => 'form-control'
+                ])
+                ?> 
+            </div>
+            <span class="clearfix">&nbsp;</span>
+            <?php
+        }
+        ?>
         <div class="col-md-6">  
             <?= $form->field($model, 'file')->fileInput() ?> 
             <a class="text-danger" download href="<?= \yii\helpers\BaseUrl::home() ?>/data/Sample.xlsx">Sample.xlsx</a>
