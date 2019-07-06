@@ -46,6 +46,7 @@ class ClientCampaignSearch extends ClientCampaigns
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['client_campaign_id' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -62,6 +63,7 @@ class ClientCampaignSearch extends ClientCampaigns
             'client_id' => $this->client_id,
             'character_count' => $this->character_count,
             'created_at' => $this->created_at,
+            'is_deleted' => 0
         ]);
 
         $query->andFilterWhere(['like', 'campaign_name', $this->campaign_name])

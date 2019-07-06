@@ -20,7 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -38,10 +39,35 @@ $this->params['breadcrumbs'][] = $this->title;
             'character_count',
             //'created_at',
             //'campaign_type',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {update} {delete}',
+                'buttons' => [
+                    'update' => function($url, $model) {
+                        if($model->is_publish==0){
+                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>',$url,[
+                                'title' => 'Update',
+                                'aria-label' => 'Update',
+                                'data-pjax' => '0',
+                            ]);
+                        }
+                    },
+                    'delete' => function($url, $model) {
+                        if($model->is_publish==0){
+                            return Html::a('<span class="glyphicon glyphicon-trash"></span>',$url,[
+                                'title' => 'Delete',
+                                'aria-label' => 'Delete',
+                                'data-pjax' => '0',
+                                'data-confirm' => 'Are you sure you want to delete this item?',
+                                'data-method' => 'post',
+                            ]);
+                        }
+                    },
+                ]
+            ],
         ],
-    ]); ?>
+    ]);
+    ?>
 
 
 </div>

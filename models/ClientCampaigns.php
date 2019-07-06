@@ -22,6 +22,7 @@ use Yii;
  */
 class ClientCampaigns extends \yii\db\ActiveRecord
 {
+    public $phone_numbers;
     /**
      * {@inheritdoc}
      */
@@ -40,6 +41,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
             [['client_id', 'character_count'], 'integer'],
             [['message'], 'string'],
             [['created_at'], 'safe'],
+            [['phone_numbers'], 'required', 'on' => ['create','update'],'message' => 'Select Phone Numbers'],
             [['campaign_name', 'from_number', 'campaign_type'], 'string', 'max' => 32],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'client_id']],
         ];

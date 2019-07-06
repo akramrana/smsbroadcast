@@ -8,17 +8,16 @@ use app\models\ClientCampaignSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\web\ForbiddenHttpException;
 /**
  * ClientCampaignController implements the CRUD actions for ClientCampaigns model.
  */
-class ClientCampaignController extends Controller
-{
+class ClientCampaignController extends Controller {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -33,14 +32,13 @@ class ClientCampaignController extends Controller
      * Lists all ClientCampaigns models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new ClientCampaignSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -50,10 +48,9 @@ class ClientCampaignController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -62,16 +59,35 @@ class ClientCampaignController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new ClientCampaigns();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->client_campaign_id]);
+        $model->scenario = 'create';
+        if ($model->load(Yii::$app->request->post())) {
+            $request = Yii::$app->request->bodyParams;
+            $model->created_at = date('Y-m-d H:i:s');
+            $model->campaign_type = "General";
+            $model->character_count = strlen($request['ClientCampaigns']['message']);
+            $model->is_publish = 0;
+            $model->is_deleted = 0;
+            if ($model->save()) {
+                if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
+                    foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
+                        $campaignNumner = new \app\models\ClientCampaignNumbers();
+                        $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                        $campaignNumner->client_number_id = $val;
+                        $campaignNumner->save();
+                    }
+                }
+                Yii::$app->session->setFlash('success', 'Campaign successfully saved');
+                return $this->redirect(['index']);
+            } else {
+                return $this->render('create', [
+                            'model' => $model,
+                ]);
+            }
         }
-
         return $this->render('create', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -82,16 +98,34 @@ class ClientCampaignController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->client_campaign_id]);
+        if ($model->is_publish == 1) {
+            throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
         }
-
+        $model->scenario = 'update';
+        if ($model->load(Yii::$app->request->post())) {
+            $request = Yii::$app->request->bodyParams;
+            \app\models\ClientCampaignNumbers::deleteAll('client_campaign_id = '.$model->client_campaign_id);
+            if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
+                foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
+                    $campaignNumner = new \app\models\ClientCampaignNumbers();
+                    $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                    $campaignNumner->client_number_id = $val;
+                    $campaignNumner->save();
+                }
+            }
+            Yii::$app->session->setFlash('success', 'Campaign successfully updated');
+            if ($model->save()) {
+                return $this->redirect(['index']);
+            } else {
+                return $this->render('update', [
+                            'model' => $model,
+                ]);
+            }
+        }
         return $this->render('update', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -102,22 +136,39 @@ class ClientCampaignController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
+    public function actionDelete($id) {
+        $model = $this->findModel($id);
+        if ($model->is_publish == 1) {
+            throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+        }
+        $model->is_deleted = 1;
+        $model->save();
+        Yii::$app->session->setFlash('success', 'Campaign successfully deleted');
         return $this->redirect(['index']);
     }
 
-    public function actionGetNumbers()
-    {
+    public function actionGetNumbers($client_id = "") {
         $requestData = Yii::$app->request->queryParams;
         $query = \app\models\ClientNumbers::find()
                 ->where(['is_deleted' => 0])
                 ->orderBy(['created_at' => SORT_DESC]);
+        if (!empty($requestData['search']['value'])) {
+            $query->andWhere([
+                'AND',
+                [
+                    'OR',
+                    ['LIKE', 'name', $requestData['search']['value']],
+                    ['LIKE', 'number', $requestData['search']['value']],
+                ]
+            ]);
+        }
+        if ($client_id != null) {
+            $query->andWhere(['client_id' => $client_id]);
+        }
         $data = $query->all();
         $totalData = count($data);
-        $totalFiltered = count($data);
+        $totalFiltered = count($totalData);
+
         $query->limit($requestData['length']);
         $query->offset($requestData['start']);
         $result = $query->all();
@@ -147,12 +198,12 @@ class ClientCampaignController extends Controller
      * @return ClientCampaigns the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = ClientCampaigns::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }
