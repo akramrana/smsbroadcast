@@ -49,7 +49,7 @@ class ClientGroups extends \yii\db\ActiveRecord
     {
         return [
             'client_group_id' => 'Client Group ID',
-            'client_id' => 'Client ID',
+            'client_id' => 'Client',
             'group_name' => 'Group Name',
             'is_active' => 'Is Active',
             'is_deleted' => 'Is Deleted',

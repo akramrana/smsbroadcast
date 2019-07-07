@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\ClientGroups */
 
-$this->title = $model->client_group_id;
+$this->title = $model->group_name;
 $this->params['breadcrumbs'][] = ['label' => 'Client Groups', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -29,13 +29,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'client_group_id',
-            'client_id',
+            [
+                'attribute' => 'client_id',
+                'value' => $model->client->business_name,
+            ],
             'group_name',
-            'is_active',
-            'is_deleted',
-            'created_at',
-            'updated_at',
+            [
+                'attribute' => 'is_active',
+                'value' => ($model->is_active == 1) ? 'Yes' : 'No'
+            ],
         ],
     ]) ?>
 

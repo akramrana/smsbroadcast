@@ -60,6 +60,11 @@ AppAsset::register($this);
                         'visible' => Yii::$app->auth->checkAccess(\Yii::$app->session['_smsbroadcastAuth'], '/client/index')
                     ],
                     [
+                        'label' => 'Group',
+                        'url' => ['/client-group/index'],
+                        'visible' => Yii::$app->auth->checkAccess(\Yii::$app->session['_smsbroadcastAuth'], '/client-group/index')
+                    ],
+                    [
                         'label' => 'Campaign',
                         'url' => ['/client-campaign/index'],
                         'visible' => Yii::$app->auth->checkAccess(\Yii::$app->session['_smsbroadcastAuth'], '/client-campaign/index')

@@ -24,6 +24,7 @@ class Auth {
         '/client-campaign/index',
         '/client-number/index',
         '/client-subscription/index',
+        '/client-group/index'
     ];
     
     public $client_menu = [
@@ -31,6 +32,7 @@ class Auth {
         '/client-number/index',
         '/client-subscription/index',
         '/profile/edit',
+        '/client-group/index'
     ];
 
     public function checkAccess($role, $menu = '', $controller = null) {

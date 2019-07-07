@@ -46,6 +46,7 @@ class ClientGroupSearch extends ClientGroups
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['client_group_id' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -59,14 +60,21 @@ class ClientGroupSearch extends ClientGroups
         // grid filtering conditions
         $query->andFilterWhere([
             'client_group_id' => $this->client_group_id,
-            'client_id' => $this->client_id,
+            //'client_id' => $this->client_id,
             'is_active' => $this->is_active,
-            'is_deleted' => $this->is_deleted,
+            'is_deleted' => 0,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
         $query->andFilterWhere(['like', 'group_name', $this->group_name]);
+        
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            $query->andFilterWhere(['client_id' => $this->client_id]);
+        }
+        else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
+        }
 
         return $dataProvider;
     }

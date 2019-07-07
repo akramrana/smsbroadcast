@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\ClientGroups */
 
-$this->title = 'Create Client Groups';
+$this->title = 'Create Group';
 $this->params['breadcrumbs'][] = ['label' => 'Client Groups', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

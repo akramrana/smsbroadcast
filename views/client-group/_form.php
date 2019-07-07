@@ -12,18 +12,26 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
-          <div class="col-md-6">  <?= $form->field($model, 'client_id')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'group_name')->textInput(['maxlength' => true]) ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'is_active')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'is_deleted')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'created_at')->textInput() ?> </div>
-
-  <div class="col-md-6">  <?= $form->field($model, 'updated_at')->textInput() ?> </div>
-
+        <?php
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+            ?>
+            <div class="col-md-6">  
+                <?=
+                $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(), [
+                    'prompt' => 'Please Select',
+                    'class' => 'form-control',
+                ])
+                ?>
+            </div>
+            <span class="clearfix">&nbsp;</span>
+            <?php
+        }
+        ?>
+        <div class="col-md-6">  
+            <?= $form->field($model, 'group_name')->textInput(['maxlength' => true]) ?> 
+            
+            <?= $form->field($model, 'is_active')->checkbox(); ?> 
+        </div>
     </div>
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
