@@ -10,6 +10,10 @@ use yii\widgets\ActiveForm;
 $this->title = 'Import Numbers';
 $this->params['breadcrumbs'][] = ['label' => 'Client Numbers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$groups = [];
+if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+    $groups = \app\helpers\AppHelper::getClientGroupsById(Yii::$app->user->identity->client_id);
+}
 ?>
 <div class="client-numbers-create">
 
@@ -36,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
         <div class="col-md-6">  
             <?=
-            $form->field($model, 'client_group_id')->dropDownList([], [
+            $form->field($model, 'client_group_id')->dropDownList($groups, [
                 'prompt' => 'Please Select',
                 'class' => 'form-control'
             ])

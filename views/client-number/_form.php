@@ -15,6 +15,10 @@ if (!$model->isNewRecord) {
     } else if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
         $groups = app\helpers\AppHelper::getClientGroupsById($model->client_id);
     }
+} else {
+    if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+        $groups = \app\helpers\AppHelper::getClientGroupsById(Yii::$app->user->identity->client_id);
+    }
 }
 ?>
 <div class="client-numbers-form">
