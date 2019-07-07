@@ -19,7 +19,7 @@ class ClientCampaignSearch extends ClientCampaigns
     {
         return [
             [['client_campaign_id', 'client_id', 'character_count'], 'integer'],
-            [['campaign_name', 'from_number', 'message', 'created_at', 'campaign_type'], 'safe'],
+            [['campaign_name', 'from_number', 'message', 'created_at', 'campaign_type','client_group_id'], 'safe'],
         ];
     }
 
@@ -62,6 +62,7 @@ class ClientCampaignSearch extends ClientCampaigns
         $query->andFilterWhere([
             'client_campaign_id' => $this->client_campaign_id,
             //'client_id' => $this->client_id,
+            'client_group_id' => $this->client_group_id,
             'character_count' => $this->character_count,
             'created_at' => $this->created_at,
             'is_deleted' => 0

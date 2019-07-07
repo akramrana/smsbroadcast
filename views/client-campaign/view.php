@@ -45,6 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'client_id',
                 'value' => $model->client->business_name,
             ],
+            [
+                'attribute' => 'client_group_id',
+                'value' => !empty($model->clientGroups)?$model->clientGroups->group_name:"",
+            ],
             'campaign_name',
             'from_number',
             'message:ntext',

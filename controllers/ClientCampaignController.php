@@ -193,7 +193,7 @@ class ClientCampaignController extends Controller {
         return $this->redirect(['index']);
     }
 
-    public function actionGetNumbers($client_id = "") {
+    public function actionGetNumbers($client_id = "", $client_group_id="") {
         $requestData = Yii::$app->request->queryParams;
         $query = \app\models\ClientNumbers::find()
                 ->where(['is_deleted' => 0])
@@ -212,8 +212,14 @@ class ClientCampaignController extends Controller {
             if ($client_id != null) {
                 $query->andWhere(['client_id' => $client_id]);
             }
+            if ($client_group_id != null) {
+                $query->andWhere(['client_group_id' => $client_group_id]);
+            }
         } else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
             $query->andWhere(['client_id' => Yii::$app->user->identity->client_id]);
+            if ($client_group_id != null) {
+                $query->andWhere(['client_group_id' => $client_group_id]);
+            }
         }
         $data = $query->all();
         $totalData = count($data);

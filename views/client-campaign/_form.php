@@ -7,6 +7,21 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\models\ClientCampaigns */
 /* @var $form yii\widgets\ActiveForm */
+$groups = [];
+if (!$model->isNewRecord) {
+    $model->campaign_name = trim($model->campaign_name);
+    $model->from_number = trim($model->from_number);
+    $model->message = trim($model->message);
+    if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+        $groups = \app\helpers\AppHelper::getClientGroupsById(Yii::$app->user->identity->client_id);
+    } else if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
+        $groups = app\helpers\AppHelper::getClientGroupsById($model->client_id);
+    }
+} else {
+    if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+        $groups = \app\helpers\AppHelper::getClientGroupsById(Yii::$app->user->identity->client_id);
+    }
+}
 ?>
 
 <div class="client-campaigns-form">
@@ -21,7 +36,7 @@ use yii\widgets\ActiveForm;
                 $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(), [
                     'prompt' => 'Please Select',
                     'class' => 'form-control',
-                    'onchange' => 'app.changeClientNumberList(this.value)'
+                    'onchange' => 'app.changeClientNumberList(this.value);app.getClientGroupList(this.value,"#clientcampaigns-client_group_id")'
                 ])
                 ?> 
             </div>
@@ -29,6 +44,16 @@ use yii\widgets\ActiveForm;
             <?php
         }
         ?>
+        <div class="col-md-6">  
+            <?=
+            $form->field($model, 'client_group_id')->dropDownList($groups, [
+                'prompt' => 'Please Select',
+                'class' => 'form-control',
+                'onchange' => 'app.changeClientNumberListGroupWise(this.value)'
+            ])
+            ?> 
+        </div>
+        <span class="clearfix">&nbsp;</span>
         <div class="col-md-6">  
             <?= $form->field($model, 'campaign_name')->textInput(['maxlength' => true]) ?> 
 
@@ -93,7 +118,11 @@ if (!$model->isNewRecord) {
 $js = "var phoneNumberId = [" . $phoneNumberIds . "];
        jQuery(function ($) {
             var client_id = $('#clientcampaigns-client_id').val(); 
-            var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id='+client_id;
+            if(client_id==null){
+                client_id = '';
+            }
+            var client_group_id = $('#clientcampaigns-client_group_id').val(); 
+            var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id='+client_id+'&client_group_id='+client_group_id;
             var table = $('#phone-listing').DataTable({
                 'destroy': true,
                 'searching': true,

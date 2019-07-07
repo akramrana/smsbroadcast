@@ -40,7 +40,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
             [['client_id', 'campaign_name', 'from_number', 'message', 'character_count', 'created_at', 'campaign_type'], 'required'],
             [['client_id', 'character_count'], 'integer'],
             [['message'], 'string'],
-            [['created_at'], 'safe'],
+            [['created_at','client_group_id'], 'safe'],
             [['phone_numbers'], 'required', 'on' => ['create','update'],'message' => 'Select Phone Numbers'],
             [['campaign_name', 'from_number', 'campaign_type'], 'string', 'max' => 32],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'client_id']],
@@ -55,6 +55,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
         return [
             'client_campaign_id' => 'Client Campaign ID',
             'client_id' => 'Client',
+            'client_group_id' => 'Group',
             'campaign_name' => 'Campaign Name',
             'from_number' => 'From Number',
             'message' => 'Message',
@@ -86,5 +87,13 @@ class ClientCampaigns extends \yii\db\ActiveRecord
     public function getClient()
     {
         return $this->hasOne(Clients::className(), ['client_id' => 'client_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getClientGroups()
+    {
+        return $this->hasOne(ClientGroups::className(), ['client_group_id' => 'client_group_id']);
     }
 }

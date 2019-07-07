@@ -10,6 +10,16 @@ var app = {
         oTable.ajax.url(newSourceUrl);
         oTable.draw();
     },
+    changeClientNumberListGroupWise: function (client_group_id) {
+        var client_id = $("#clientcampaigns-client_id").val();
+        if(client_id==null){
+            client_id = "";
+        }
+        var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id=' + client_id + "&client_group_id=" + client_group_id;
+        var oTable = $('#phone-listing').DataTable();
+        oTable.ajax.url(newSourceUrl);
+        oTable.draw();
+    },
     validation: {
         checkPassword: function ()
         {
@@ -45,31 +55,30 @@ var app = {
             $(field_class + " .help-block").html('');
         }
     },
-    getClientGroupList:function(val,selector)
+    getClientGroupList: function (val, selector)
     {
-        if($.trim(val)!="")
+        if ($.trim(val) != "")
         {
             $.ajax({
-                type:"GET",
-                url:baseUrl+'client-number/get-groups',
-                data:{
-                    id:val
+                type: "GET",
+                url: baseUrl + 'client-number/get-groups',
+                data: {
+                    id: val
                 },
-                success:function(res){
+                success: function (res) {
                     var obj = $.parseJSON(res);
                     //console.log(obj);
                     var options = '<option value="">Please Select</option>';
-                    if(obj.length > 0 && obj!=null)
+                    if (obj.length > 0 && obj != null)
                     {
-                        $.each(obj,function(i,v){
-                            options+='<option value="'+v.id+'">'+v.name+'</option>';
+                        $.each(obj, function (i, v) {
+                            options += '<option value="' + v.id + '">' + v.name + '</option>';
                         })
                     }
                     $(selector).html(options);
                 }
             });
-        }
-        else{
+        } else {
             $(selector).html('<option value="">Please Select</option>');
         }
     },
