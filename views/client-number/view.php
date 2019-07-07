@@ -33,6 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'client_id',
                 'value' => $model->client->business_name,
             ],
+            [
+                'attribute' => 'client_group_id',
+                'value' => !empty($model->clientGroups)?$model->clientGroups->group_name:"",
+            ],
             'name',
             'number',
             'created_at',

@@ -44,6 +44,34 @@ var app = {
             $(field_class).addClass('has-success');
             $(field_class + " .help-block").html('');
         }
-    }
+    },
+    getClientGroupList:function(val,selector)
+    {
+        if($.trim(val)!="")
+        {
+            $.ajax({
+                type:"GET",
+                url:baseUrl+'client-number/get-groups',
+                data:{
+                    id:val
+                },
+                success:function(res){
+                    var obj = $.parseJSON(res);
+                    //console.log(obj);
+                    var options = '<option value="">Please Select</option>';
+                    if(obj.length > 0 && obj!=null)
+                    {
+                        $.each(obj,function(i,v){
+                            options+='<option value="'+v.id+'">'+v.name+'</option>';
+                        })
+                    }
+                    $(selector).html(options);
+                }
+            });
+        }
+        else{
+            $(selector).html('<option value="">Please Select</option>');
+        }
+    },
 }
 

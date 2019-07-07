@@ -19,7 +19,7 @@ class ClientNumberSearch extends ClientNumbers
     {
         return [
             [['client_number_id', 'client_id'], 'integer'],
-            [['name', 'number', 'created_at'], 'safe'],
+            [['name', 'number', 'created_at', 'client_group_id'], 'safe'],
         ];
     }
 
@@ -62,6 +62,7 @@ class ClientNumberSearch extends ClientNumbers
         $query->andFilterWhere([
             'client_number_id' => $this->client_number_id,
             //'client_id' => $this->client_id,
+            'client_group_id' => $this->client_group_id,
             'created_at' => $this->created_at,
             'is_deleted' => 0
         ]);

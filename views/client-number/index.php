@@ -35,6 +35,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'visible' => (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? true : false,
                 'filter' => Html::activeDropDownList($searchModel, 'client_id', app\helpers\AppHelper ::getAllClients(), ['class' => 'form-control', 'prompt' => 'Filter']),
             ],
+            [
+                'attribute' => 'client_group_id',
+                'value' => function($model) {
+                    return !empty($model->clientGroups)?$model->clientGroups->group_name:"";
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'client_group_id', app\helpers\AppHelper ::getClientGroups(), ['class' => 'form-control', 'prompt' => 'Filter']),
+            ],
             'number',
             'name',
             ['class' => 'yii\grid\ActionColumn', 'template' => '{update} {delete}'],

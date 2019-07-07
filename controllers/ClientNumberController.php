@@ -213,6 +213,26 @@ class ClientNumberController extends Controller {
         ]);
     }
 
+    public function actionGetGroups($id)
+    {
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            return [];
+        }
+        $query = \app\models\ClientGroups::find()
+                ->select(['client_group_id','LTRIM(RTRIM(group_name)) as group_name'])
+                ->where(['is_deleted' => 0]);
+        $query->andWhere(['client_id' => $id]);
+        $model = $query->all();
+        $data = [];
+        foreach ($model as $row){
+            $d = [
+                'id' => $row->client_group_id,
+                'name' => $row->group_name,
+            ];
+            array_push($data,$d);
+        }
+        return \yii\helpers\Json::encode($data);
+    }
     /**
      * Finds the ClientNumbers model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

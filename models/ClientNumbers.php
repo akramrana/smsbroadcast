@@ -35,7 +35,7 @@ class ClientNumbers extends \yii\db\ActiveRecord
         return [
             [['client_id', 'number', 'created_at'], 'required'],
             [['client_id'], 'integer'],
-            [['created_at'], 'safe'],
+            [['created_at','client_group_id'], 'safe'],
             [['name'], 'string', 'max' => 48],
             [['number'], 'string', 'max' => 32],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'client_id']],
@@ -52,6 +52,7 @@ class ClientNumbers extends \yii\db\ActiveRecord
             'client_id' => 'Client',
             'name' => 'Name',
             'number' => 'Number',
+            'client_group_id' => 'Group',
             'created_at' => 'Created At',
         ];
     }
@@ -78,5 +79,13 @@ class ClientNumbers extends \yii\db\ActiveRecord
     public function getClient()
     {
         return $this->hasOne(Clients::className(), ['client_id' => 'client_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getClientGroups()
+    {
+        return $this->hasOne(ClientGroups::className(), ['client_group_id' => 'client_group_id']);
     }
 }
