@@ -18,12 +18,13 @@ class ExcelUpload extends Model{
     
     public $file;
     public $client_id;
+    public $client_group_id;
 
     public function rules()
     {
         return [
             [['client_id','file'], 'required'],
-            [['client_id','file'], 'safe'],
+            [['client_id','file','client_group_id'], 'safe'],
             [['file'], 'required', 'message' => \Yii::t('app', 'Upload at least one file.')],
             [['file'], 'file','extensions' => 'xlsx,xls'],
         ];
@@ -34,6 +35,7 @@ class ExcelUpload extends Model{
         return [
             'file' => \Yii::t('app', 'Excel File'),
             'client_id' => \Yii::t('app', 'Client'),
+            'client_group_id' => \Yii::t('app', 'Group'),
         ];
     }
 }

@@ -25,7 +25,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?=
                 $form->field($model, 'client_id')->dropDownList(\app\helpers\AppHelper::getAllClients(), [
                     'prompt' => 'Please Select',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'onchange' => 'app.getClientGroupList(this.value,"#excelupload-client_group_id")'
                 ])
                 ?> 
             </div>
@@ -33,6 +34,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
         }
         ?>
+        <div class="col-md-6">  
+            <?=
+            $form->field($model, 'client_group_id')->dropDownList([], [
+                'prompt' => 'Please Select',
+                'class' => 'form-control'
+            ])
+            ?> 
+        </div>
+        <span class="clearfix">&nbsp;</span>
         <div class="col-md-6">  
             <?= $form->field($model, 'file')->fileInput() ?> 
             <a class="text-danger" download href="<?= \yii\helpers\BaseUrl::home() ?>/data/Sample.xlsx">Sample.xlsx</a>

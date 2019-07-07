@@ -186,9 +186,11 @@ class ClientNumberController extends Controller {
                                 $clientNumberModel->number = $phone;
                                 $clientNumberModel->name = $name;
                                 $clientNumberModel->created_at = date('Y-m-d H:i:s');
+                                $clientNumberModel->client_group_id = $model->client_group_id;
                             } else {
                                 $clientNumberModel->number = $phone;
                                 $clientNumberModel->name = $name;
+                                $clientNumberModel->client_group_id = $model->client_group_id;
                             }
                             if ($clientNumberModel->save()) {
                                 $processedCount++;
