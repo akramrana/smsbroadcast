@@ -12,13 +12,15 @@ var app = {
     },
     changeClientNumberListGroupWise: function (client_group_id) {
         var client_id = $("#clientcampaigns-client_id").val();
-        if(client_id==null){
+        if (client_id == null) {
             client_id = "";
         }
         var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id=' + client_id + "&client_group_id=" + client_group_id;
         var oTable = $('#phone-listing').DataTable();
         oTable.ajax.url(newSourceUrl);
         oTable.draw();
+        //
+        $("#send-to-all-section").show();
     },
     validation: {
         checkPassword: function ()
@@ -82,5 +84,14 @@ var app = {
             $(selector).html('<option value="">Please Select</option>');
         }
     },
+    showHidePhoneNumbers: function () {
+        if ($('#clientcampaigns-sent_to_all').is(':checked')) {
+            $("#phone-number-section").hide();
+            $("#clientcampaigns-phone_numbers").val("1").blur();
+        }else{
+            $("#phone-number-section").show();
+            $("#clientcampaigns-phone_numbers").val("").blur();
+        }
+    }
 }
 

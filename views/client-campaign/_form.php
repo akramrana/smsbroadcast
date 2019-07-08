@@ -62,24 +62,52 @@ if (!$model->isNewRecord) {
         <div class="col-md-6">  
             <?= $form->field($model, 'from_number')->textInput(['maxlength' => true]) ?> 
         </div>
+        <?php
+        if($model->isNewRecord){
+            $sentToAll = 'display:none;';
+            $pnsCss = '';
+        }else{
+            if($model->sent_to_all=='1'){
+                $model->phone_numbers = '1';
+                $pnsCss = 'display:none;';
+            }else{
+                $pnsCss = '';
+            }
+            if($model->client_group_id==""){
+                $sentToAll = 'display:none;';
+            }else{
+                $sentToAll="";
+            }
+        }
+        ?>
+        <div id="send-to-all-section" style="<?php echo $sentToAll; ?>">
+            <span class="clearfix">&nbsp;</span>
+            <div class="col-md-6">  
+                <?= $form->field($model, 'sent_to_all')->checkbox([
+                    'onclick' => 'app.showHidePhoneNumbers()'
+                ]); ?>
+            </div>
+        </div>
         <span class="clearfix">&nbsp;</span>
-        <div class="col-md-12">
-            <label class="control-label" for="">Phone Number</label>
-            <?php
-            echo $form->field($model, 'phone_numbers')->hiddenInput()->label(false);
-            ?>
-            <hr/>
-            <table id="phone-listing" class="display select table" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>
-                            <input name="select_all" value="1" id="phone-select-all" type="checkbox">
-                        </th>
-                        <th>Phone Number</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-            </table>
+        <div id="phone-number-section" style="<?php echo $pnsCss; ?>">
+            <div class="col-md-12">
+                <label class="control-label" for="">Phone Number</label>
+                <?php
+                echo $form->field($model, 'phone_numbers')->hiddenInput()->label(false);
+                ?>
+                <hr/>
+                <table id="phone-listing" class="display select table" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input name="select_all" value="1" id="phone-select-all" type="checkbox">
+                            </th>
+                            <th>Phone Number</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="dynamicElement">

@@ -40,7 +40,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
             [['client_id', 'campaign_name', 'from_number', 'message', 'character_count', 'created_at', 'campaign_type'], 'required'],
             [['client_id', 'character_count'], 'integer'],
             [['message'], 'string'],
-            [['created_at','client_group_id'], 'safe'],
+            [['created_at','client_group_id', 'sent_to_all'], 'safe'],
             [['phone_numbers'], 'required', 'on' => ['create','update'],'message' => 'Select Phone Numbers'],
             [['campaign_name', 'from_number', 'campaign_type'], 'string', 'max' => 32],
             [['client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Clients::className(), 'targetAttribute' => ['client_id' => 'client_id']],
@@ -62,6 +62,7 @@ class ClientCampaigns extends \yii\db\ActiveRecord
             'character_count' => 'Character Count',
             'created_at' => 'Created At',
             'campaign_type' => 'Campaign Type',
+            'sent_to_all' => 'Sent to All Group Member',
         ];
     }
 

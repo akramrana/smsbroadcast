@@ -106,14 +106,30 @@ class ClientCampaignController extends Controller {
             $model->is_publish = 0;
             $model->is_deleted = 0;
             if ($model->save()) {
-                if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
-                    foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
-                        $campaignNumner = new \app\models\ClientCampaignNumbers();
-                        $campaignNumner->client_campaign_id = $model->client_campaign_id;
-                        $campaignNumner->client_number_id = $val;
-                        $campaignNumner->save();
+                if ($model->sent_to_all == 0) {
+                    if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
+                        foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
+                            $campaignNumner = new \app\models\ClientCampaignNumbers();
+                            $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                            $campaignNumner->client_number_id = $val;
+                            $campaignNumner->save();
+                        }
                     }
                 }
+                if ($model->sent_to_all == 1) {
+                    $clientNumbers = \app\models\ClientNumbers::find()
+                            ->where(['client_group_id' => $model->client_group_id, 'is_deleted' => 0])
+                            ->all();
+                    if (!empty($clientNumbers)) {
+                        foreach ($clientNumbers as $cnum) {
+                            $campaignNumner = new \app\models\ClientCampaignNumbers();
+                            $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                            $campaignNumner->client_number_id = $cnum->client_number_id;
+                            $campaignNumner->save();
+                        }
+                    }
+                }
+
                 Yii::$app->session->setFlash('success', 'Campaign successfully saved');
                 return $this->redirect(['index']);
             } else {
@@ -148,12 +164,27 @@ class ClientCampaignController extends Controller {
         if ($model->load(Yii::$app->request->post())) {
             $request = Yii::$app->request->bodyParams;
             \app\models\ClientCampaignNumbers::deleteAll('client_campaign_id = ' . $model->client_campaign_id);
-            if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
-                foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
-                    $campaignNumner = new \app\models\ClientCampaignNumbers();
-                    $campaignNumner->client_campaign_id = $model->client_campaign_id;
-                    $campaignNumner->client_number_id = $val;
-                    $campaignNumner->save();
+            if ($model->sent_to_all == 0) {
+                if (!empty($request['ClientCampaignNumbers']['client_number_id'])) {
+                    foreach ($request['ClientCampaignNumbers']['client_number_id'] as $val) {
+                        $campaignNumner = new \app\models\ClientCampaignNumbers();
+                        $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                        $campaignNumner->client_number_id = $val;
+                        $campaignNumner->save();
+                    }
+                }
+            }
+            if ($model->sent_to_all == 1) {
+                $clientNumbers = \app\models\ClientNumbers::find()
+                        ->where(['client_group_id' => $model->client_group_id, 'is_deleted' => 0])
+                        ->all();
+                if (!empty($clientNumbers)) {
+                    foreach ($clientNumbers as $cnum) {
+                        $campaignNumner = new \app\models\ClientCampaignNumbers();
+                        $campaignNumner->client_campaign_id = $model->client_campaign_id;
+                        $campaignNumner->client_number_id = $cnum->client_number_id;
+                        $campaignNumner->save();
+                    }
                 }
             }
             Yii::$app->session->setFlash('success', 'Campaign successfully updated');
@@ -193,7 +224,7 @@ class ClientCampaignController extends Controller {
         return $this->redirect(['index']);
     }
 
-    public function actionGetNumbers($client_id = "", $client_group_id="") {
+    public function actionGetNumbers($client_id = "", $client_group_id = "") {
         $requestData = Yii::$app->request->queryParams;
         $query = \app\models\ClientNumbers::find()
                 ->where(['is_deleted' => 0])
