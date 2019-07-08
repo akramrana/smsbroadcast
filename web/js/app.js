@@ -15,20 +15,35 @@ var app = {
         phoneNumberId = [];
     },
     changeClientNumberListGroupWise: function (client_group_id) {
-        var client_id = $("#clientcampaigns-client_id").val();
-        if (client_id == null) {
-            client_id = "";
+        if ($.trim(client_group_id) != "") {
+            var client_id = $("#clientcampaigns-client_id").val();
+            if (client_id == null) {
+                client_id = "";
+            }
+            var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id=' + client_id + "&client_group_id=" + client_group_id;
+            var oTable = $('#phone-listing').DataTable();
+            oTable.ajax.url(newSourceUrl);
+            oTable.draw();
+            //
+            $("#send-to-all-section").show();
+            $('input[id=phone-select-all]').prop('checked', false);
+            $("#phoneElement").html("");
+            $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
+            phoneNumberId = [];
+        }else{
+            var client_id = $("#clientcampaigns-client_id").val();
+            if (client_id == null) {
+                client_id = "";
+            }
+            var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id=' + client_id + "&client_group_id=";
+            var oTable = $('#phone-listing').DataTable();
+            oTable.ajax.url(newSourceUrl);
+            oTable.draw();
+            
+            $("#send-to-all-section").hide();
+            $("#phone-number-section").show();
+            $('input[id=clientcampaigns-sent_to_all]').prop('checked', false);
         }
-        var newSourceUrl = baseUrl + 'client-campaign/get-numbers?client_id=' + client_id + "&client_group_id=" + client_group_id;
-        var oTable = $('#phone-listing').DataTable();
-        oTable.ajax.url(newSourceUrl);
-        oTable.draw();
-        //
-        $("#send-to-all-section").show();
-        $('input[id=phone-select-all]').prop('checked', false);
-        $("#phoneElement").html("");
-        $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
-        phoneNumberId = [];
     },
     validation: {
         checkPassword: function ()
@@ -124,11 +139,10 @@ var app = {
                     success: function (res) {
                         $(".preloader").hide();
                         var obj = $.parseJSON(res);
-                        if(obj.status==201)
+                        if (obj.status == 201)
                         {
                             alert(obj.message);
-                        }
-                        else if(obj.status==200){
+                        } else if (obj.status == 200) {
                             alert(obj.message);
                             location.reload();
                         }
