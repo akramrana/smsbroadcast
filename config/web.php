@@ -9,7 +9,7 @@ $baseUrl = str_replace('/web', '', (new Request)->getBaseUrl());
 
 $config = [
     'id' => 'basic',
-    'name' => 'SMS Broadcast',
+    'name' => 'IinfoMedia Campaign Management',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [

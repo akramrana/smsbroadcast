@@ -281,6 +281,7 @@ class ClientCampaignController extends Controller {
 
     public function actionPublish($id) {
         $model = $this->findModel($id);
+        $totalSms = $model->client->total_sms;
         if ($model->is_publish == 1) {
             throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
         }
@@ -361,6 +362,10 @@ class ClientCampaignController extends Controller {
                         }
                         $model->is_publish = 1;
                         $model->save(false);
+                        //
+                        $clientModel = \app\models\Clients::findOne($model->client_id);
+                        $clientModel->total_sms = ($totalSms-count($numbers));
+                        $clientModel->save(false);
                         //
                         return json_encode([
                             'status' => 200,
