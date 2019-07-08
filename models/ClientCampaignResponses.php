@@ -36,7 +36,7 @@ class ClientCampaignResponses extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['client_campaign_id', 'message_id', 'status', 'status_text', 'error_code', 'error_text', 'sms_count', 'current_credit', 'created_at'], 'required'],
+            [['client_campaign_id', 'message_id', 'status', 'status_text', 'error_code', 'sms_count', 'current_credit', 'created_at'], 'required'],
             [['client_campaign_id', 'message_id', 'status', 'error_code', 'sms_count'], 'integer'],
             [['current_credit'], 'number'],
             [['created_at'], 'safe'],

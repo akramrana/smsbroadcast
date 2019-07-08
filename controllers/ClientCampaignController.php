@@ -34,18 +34,18 @@ class ClientCampaignController extends Controller {
                 'ruleConfig' => [
                     'class' => AccessRule::className(),
                 ],
-                'only' => ['index', 'view', 'create', 'update', 'delete'],
+                'only' => ['index', 'view', 'create', 'update', 'delete', 'publish'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'publish'],
                         'roles' => [
                             UserIdentity::ROLE_ADMIN
                         ]
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'publish'],
                         'roles' => [
                             UserIdentity::ROLE_CLIENT
                         ]
@@ -277,6 +277,109 @@ class ClientCampaignController extends Controller {
             "data" => $resultSet
         );
         return json_encode($json_data);
+    }
+
+    public function actionPublish($id) {
+        $model = $this->findModel($id);
+        if ($model->is_publish == 1) {
+            throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+        }
+        if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
+            if ($model->client_id != Yii::$app->user->identity->client_id) {
+                throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
+            }
+        }
+        $numbers = [];
+        $clientCampaignNumbers = \app\models\ClientCampaignNumbers::find()
+                ->join('LEFT JOIN', 'client_numbers', 'client_campaign_numbers.client_number_id = client_numbers.client_number_id')
+                ->where(['client_campaign_id' => $model->client_campaign_id, 'is_deleted' => 0])
+                ->all();
+        if (!empty($clientCampaignNumbers)) {
+            foreach ($clientCampaignNumbers as $ccn) {
+                $numbers[] = trim($ccn->clientNumber->number);
+            }
+        }
+        $clientRemainingCredit = $model->client->total_sms;
+        if (count($numbers) <= $clientRemainingCredit) {
+            $fields = array(
+                'Username' => 'iinfo',
+                'Password' => 'Abcd@1234',
+                'From' => '8801841447171',
+                'To' => implode(',', $numbers),
+                'Message' => trim($model->message),
+            );
+            $postvars = '';
+            foreach ($fields as $key => $value) {
+                $postvars .= $key . "=" . $value . "&";
+            }
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.mobireach.com.bd/SendTextMultiMessage",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => $postvars,
+                CURLOPT_HTTPHEADER => array(
+                    "Accept: */*",
+                    "Accept-Encoding: gzip, deflate",
+                    "Cache-Control: no-cache",
+                    "Connection: keep-alive",
+                    "Content-Type: application/x-www-form-urlencoded",
+                    "Host: api.mobireach.com.bd",
+                    "cache-control: no-cache"
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+                return json_encode([
+                    'status' => 201,
+                    'message' => "cURL Error #:" . $err
+                ]);
+            } else {
+                $cXML = simplexml_load_string($response);
+                if ($cXML) {
+                    $json = json_encode($cXML);
+                    $jData = json_decode($json, true);
+                    if (!empty($jData['ServiceClass'])) {
+                        foreach ($jData['ServiceClass'] as $res) {
+                            $camRes = new \app\models\ClientCampaignResponses();
+                            $camRes->client_campaign_id = $model->client_campaign_id;
+                            $camRes->message_id = $res['MessageId'];
+                            $camRes->status = $res['Status'];
+                            $camRes->status_text = $res['StatusText'];
+                            $camRes->error_code = $res['ErrorCode'];
+                            $camRes->error_text = !empty($res['ErrorText']) ? $res['ErrorText'] : "";
+                            $camRes->sms_count = $res['SMSCount'];
+                            $camRes->current_credit = $res['CurrentCredit'];
+                            $camRes->created_at = date('Y-m-d H:i:s');
+                            $camRes->save();
+                        }
+                        $model->is_publish = 1;
+                        $model->save(false);
+                        //
+                        return json_encode([
+                            'status' => 200,
+                            'message' => 'Campaign Successfully Published'
+                        ]);
+                    }
+                } else {
+                    return json_encode([
+                        'status' => 201,
+                        'message' => 'Unexpected Error.'
+                    ]);
+                }
+            }
+        } else {
+            return json_encode([
+                'status' => 201,
+                'message' => 'You don\'t have sufficient credit to sent sms.'
+            ]);
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="client-campaigns-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    
+
     <?php
     if ($model->is_publish == 0) {
         ?>
@@ -29,6 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'confirm' => 'Are you sure you want to delete this item?',
                     'method' => 'post',
                 ],
+            ])
+            ?>
+
+            <?=
+            Html::a('Publish', 'javascript:;', [
+                'class' => 'btn btn-success pull-right',
+                'onclick' => 'app.publishCampaign(' . $model->client_campaign_id . ')',
             ])
             ?>
         </p>
@@ -47,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'client_group_id',
-                'value' => !empty($model->clientGroups)?$model->clientGroups->group_name:"",
+                'value' => !empty($model->clientGroups) ? $model->clientGroups->group_name : "",
             ],
             'campaign_name',
             'from_number',
@@ -55,6 +62,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'character_count',
             'created_at',
             'campaign_type',
+            [
+                'attribute' => 'sent_to_all',
+                'value' => ($model->sent_to_all == 1) ? 'Yes' : 'No'
+            ],
             [
                 'attribute' => 'is_publish',
                 'value' => ($model->is_publish == 1) ? 'Yes' : 'No'
@@ -64,8 +75,11 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php
+    $query = app\models\ClientCampaignNumbers::find()
+            ->join('LEFT JOIN', 'client_numbers', 'client_campaign_numbers.client_number_id = client_numbers.client_number_id')
+            ->where(['client_campaign_id' => $model->client_campaign_id, 'is_deleted' => 0]);
     $dataProvider = new ActiveDataProvider([
-        'query' => $model->getClientCampaignNumbers(),
+        'query' => $query,
         'pagination' => [
             'pageSize' => 20,
         ],
@@ -78,6 +92,38 @@ $this->params['breadcrumbs'][] = $this->title;
             'clientNumber.name',
         ],
     ]);
+    if ($model->is_publish == 1) {
+        ?>
+        <b>Campaign Server Response</b>
+        <?php
+        $dataProvider1 = new ActiveDataProvider([
+            'query' => $model->getClientCampaignResponses(),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+        echo GridView::widget([
+            'dataProvider' => $dataProvider1,
+            'summary' => '',
+            'columns' => [
+                'message_id',
+                'status_text',
+                'error_text',
+                'sms_count',
+                [
+                    'attribute' => 'current_credit',
+                    'visible' => (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? true : false,
+                ],
+                'created_at'
+            ],
+        ]);
+    }
     ?>
 
+</div>
+
+<div class="preloader">
+    <div class="preloader-content">
+        <h3>Sending....</h3>
+    </div>
 </div>

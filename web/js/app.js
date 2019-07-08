@@ -107,6 +107,35 @@ var app = {
             $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
             phoneNumberId = [];
         }
+    },
+    publishCampaign: function (id)
+    {
+        if ($.trim(id) != "") {
+            var r = confirm('Are you sure you want to publish this campaign?');
+            if (r == true)
+            {
+                $(".preloader").show();
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl + 'client-campaign/publish',
+                    data: {
+                        id: id
+                    },
+                    success: function (res) {
+                        $(".preloader").hide();
+                        var obj = $.parseJSON(res);
+                        if(obj.status==201)
+                        {
+                            alert(obj.message);
+                        }
+                        else if(obj.status==200){
+                            alert(obj.message);
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
     }
 }
 
