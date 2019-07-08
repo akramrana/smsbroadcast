@@ -59,9 +59,6 @@ if (!$model->isNewRecord) {
 
             <?= $form->field($model, 'message')->textarea(['rows' => 6, 'maxlength' => 140]) ?> 
         </div>
-        <div class="col-md-6">  
-            <?= $form->field($model, 'from_number')->textInput(['maxlength' => true]) ?> 
-        </div>
         <?php
         if($model->isNewRecord){
             $sentToAll = 'display:none;';
@@ -113,7 +110,7 @@ if (!$model->isNewRecord) {
     <div id="dynamicElement">
         <div id="phoneElement">
             <?php
-            if (!$model->isNewRecord) {
+            if (!$model->isNewRecord && $model->sent_to_all==0) {
                 if (!empty($model->clientCampaignNumbers)) {
                     foreach ($model->clientCampaignNumbers as $ccn) {
                         ?>
@@ -134,7 +131,7 @@ if (!$model->isNewRecord) {
 </div>
 <?php
 $phoneNumberIds = 0;
-if (!$model->isNewRecord) {
+if (!$model->isNewRecord && $model->sent_to_all==0) {
     if (!empty($model->clientCampaignNumbers)) {
         $numberList = [];
         foreach ($model->clientCampaignNumbers as $ccn) {

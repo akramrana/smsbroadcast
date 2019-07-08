@@ -9,6 +9,10 @@ var app = {
         var oTable = $('#phone-listing').DataTable();
         oTable.ajax.url(newSourceUrl);
         oTable.draw();
+        $('input[id=phone-select-all]').prop('checked', false);
+        $("#phoneElement").html("");
+        $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
+        phoneNumberId = [];
     },
     changeClientNumberListGroupWise: function (client_group_id) {
         var client_id = $("#clientcampaigns-client_id").val();
@@ -21,6 +25,10 @@ var app = {
         oTable.draw();
         //
         $("#send-to-all-section").show();
+        $('input[id=phone-select-all]').prop('checked', false);
+        $("#phoneElement").html("");
+        $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
+        phoneNumberId = [];
     },
     validation: {
         checkPassword: function ()
@@ -88,9 +96,16 @@ var app = {
         if ($('#clientcampaigns-sent_to_all').is(':checked')) {
             $("#phone-number-section").hide();
             $("#clientcampaigns-phone_numbers").val("1").blur();
-        }else{
+            $("#phoneElement").html("");
+            $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
+            phoneNumberId = [];
+        } else {
             $("#phone-number-section").show();
             $("#clientcampaigns-phone_numbers").val("").blur();
+            $('input[id=phone-select-all]').prop('checked', false);
+            $("#phoneElement").html("");
+            $('#phone-listing tbody input[type=checkbox]').prop('checked', false);
+            phoneNumberId = [];
         }
     }
 }
