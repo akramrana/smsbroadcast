@@ -173,31 +173,39 @@ class ClientNumberController extends Controller {
                         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
                         $processedCount = 0;
                         $time_start = microtime(true);
+                        $dataSql = "";
                         for ($i = 2; $i <= count($sheetData); $i++) {
                             $phone = $sheetData[$i]['A'];
                             $name = $sheetData[$i]['B'];
 
                             $clientNumberModel = ClientNumbers::find()
-                                    ->where(['client_id' => $model->client_id, 'number' => $phone, 'is_deleted' => 0])
+                                    ->where(['client_id' => $model->client_id, 'LTRIM(RTRIM(number))' => $phone, 'is_deleted' => 0])
                                     ->one();
                             if (empty($clientNumberModel)) {
-                                $clientNumberModel = new ClientNumbers();
+                                /*$clientNumberModel = new ClientNumbers();
                                 $clientNumberModel->client_id = $model->client_id;
                                 $clientNumberModel->number = $phone;
                                 $clientNumberModel->name = $name;
                                 $clientNumberModel->created_at = date('Y-m-d H:i:s');
-                                $clientNumberModel->client_group_id = $model->client_group_id;
+                                $clientNumberModel->client_group_id = $model->client_group_id;*/
+                                $client_group_id = ($model->client_group_id!=null)?$model->client_group_id:new \yii\db\Expression('NULL');
+                                $sql = "INSERT INTO client_numbers (client_id,number,name,created_at,client_group_id) VALUES (".$model->client_id.",'$phone','$name','".date('Y-m-d H:i:s')."',$client_group_id);";
                             } else {
                                 $clientNumberModel->number = $phone;
                                 $clientNumberModel->name = $name;
                                 $clientNumberModel->client_group_id = $model->client_group_id;
+                                $client_group_id = ($model->client_group_id!=null)?$model->client_group_id:new \yii\db\Expression('NULL');
+                                $sql = "UPDATE client_numbers SET number= '$phone',name='$name',client_group_id=$client_group_id WHERE client_number_id = ".$clientNumberModel->client_number_id.";";
                             }
-                            if ($clientNumberModel->save()) {
+                            $processedCount++;
+                            $dataSql.= $sql;
+                            /*if ($clientNumberModel->save()) {
                                 $processedCount++;
                             } else {
                                 die(json_encode($clientNumberModel->errors));
-                            }
+                            }*/
                         }
+                        Yii::$app->db->createCommand($dataSql)->execute();
                         $time_end = microtime(true);
                         $execution_time = ($time_end - $time_start) / 60;
                         if ($processedCount > 0) {
