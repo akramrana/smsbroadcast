@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\models\ClientNumbers */
 
 $this->title = 'Update Number: ' . $model->number;
-$this->params['breadcrumbs'][] = ['label' => 'Client Numbers', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Numbers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->number, 'url' => ['view', 'id' => $model->client_number_id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

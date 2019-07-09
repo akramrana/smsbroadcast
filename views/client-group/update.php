@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\models\ClientGroups */
 
 $this->title = 'Update Group: ' . $model->group_name;
-$this->params['breadcrumbs'][] = ['label' => 'Client Groups', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Groups', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->group_name, 'url' => ['view', 'id' => $model->client_group_id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

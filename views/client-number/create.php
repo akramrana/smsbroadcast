@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\models\ClientNumbers */
 
 $this->title = 'Add Number';
-$this->params['breadcrumbs'][] = ['label' => 'Client Numbers', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Numbers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-numbers-create">

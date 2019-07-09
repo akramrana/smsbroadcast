@@ -290,6 +290,7 @@ class ClientCampaignController extends Controller {
                 throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to perform this action.'));
             }
         }
+        $setting = \app\models\Settings::find()->one();
         $numbers = [];
         $clientCampaignNumbers = \app\models\ClientCampaignNumbers::find()
                 ->join('LEFT JOIN', 'client_numbers', 'client_campaign_numbers.client_number_id = client_numbers.client_number_id')
@@ -303,9 +304,9 @@ class ClientCampaignController extends Controller {
         $clientRemainingCredit = $model->client->total_sms;
         if (count($numbers) <= $clientRemainingCredit) {
             $fields = array(
-                'Username' => 'iinfo',
-                'Password' => 'Abcd@1234',
-                'From' => '8801841447171',
+                'Username' => trim($setting->gateway_username),
+                'Password' => trim($setting->gateway_password),
+                'From' => trim($setting->gateway_number),
                 'To' => implode(',', $numbers),
                 'Message' => trim($model->message),
             );

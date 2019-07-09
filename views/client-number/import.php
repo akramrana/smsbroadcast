@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Import Numbers';
-$this->params['breadcrumbs'][] = ['label' => 'Client Numbers', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Numbers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 $groups = [];
 if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {

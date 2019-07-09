@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ClientSubscriptionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Client Payment';
+$this->title = 'Payment';
 $this->params['breadcrumbs'][] = $this->title;
 $actionBtn = '';
 if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
@@ -21,7 +21,7 @@ if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? Html::a('Add Client Payment', ['create'], ['class' => 'btn btn-success']) : "" ?>
+        <?= (\Yii::$app->session['_smsbroadcastAuth'] == 1) ? Html::a('Add Payment', ['create'], ['class' => 'btn btn-success']) : "" ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>

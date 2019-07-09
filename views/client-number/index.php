@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ClientNumberSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Client Numbers';
+$this->title = 'Numbers';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-numbers-index">

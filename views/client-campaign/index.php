@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\ClientCampaignSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Client Campaigns';
+$this->title = 'Campaigns';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="client-campaigns-index">
@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Client Campaigns', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Campaigns', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>

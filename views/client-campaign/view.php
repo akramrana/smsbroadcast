@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $model app\models\ClientCampaigns */
 
 $this->title = $model->campaign_name;
-$this->params['breadcrumbs'][] = ['label' => 'Client Campaigns', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Campaigns', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

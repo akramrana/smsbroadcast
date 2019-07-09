@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\ClientSubscriptions */
 
 $this->title = '#' . $model->client_subscription_id;
-$this->params['breadcrumbs'][] = ['label' => 'Client Subscriptions', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Payments', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
