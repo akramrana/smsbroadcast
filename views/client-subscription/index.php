@@ -11,7 +11,7 @@ $this->title = 'Payment';
 $this->params['breadcrumbs'][] = $this->title;
 $actionBtn = '';
 if (\Yii::$app->session['_smsbroadcastAuth'] == 1) {
-    $actionBtn = '{view} {update} delete';
+    $actionBtn = '{view} {update} {delete}';
 } else if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
     $actionBtn = '{view}';
 }
