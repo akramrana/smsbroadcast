@@ -93,8 +93,9 @@ class ClientCampaignController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
+        $setting = \app\models\Settings::find()->one();
         $model = new ClientCampaigns();
-        $model->from_number = '8801841447171';
+        $model->from_number = trim($setting->gateway_number);
         if (\Yii::$app->session['_smsbroadcastAuth'] == 2) {
             $model->client_id = Yii::$app->user->identity->client_id;
         }
