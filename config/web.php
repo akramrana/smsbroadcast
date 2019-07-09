@@ -9,7 +9,7 @@ $baseUrl = str_replace('/web', '', (new Request)->getBaseUrl());
 
 $config = [
     'id' => 'basic',
-    'name' => 'IinfoMedia Campaign Management',
+    'name' => 'IinfoMedia Campaign Manager',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
