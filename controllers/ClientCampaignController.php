@@ -348,7 +348,7 @@ class ClientCampaignController extends Controller {
                 if ($cXML) {
                     $json = json_encode($cXML);
                     $jData = json_decode($json, true);
-                    //debugPrint($jData['ServiceClass']);
+                    debugPrint(sizeof($jData['ServiceClass']));exit;
                     if (!empty($jData['ServiceClass'])) {
                         if (sizeof($jData['ServiceClass']) < 2) {
                             $res = $jData['ServiceClass'];
