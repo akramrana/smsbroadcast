@@ -348,8 +348,9 @@ class ClientCampaignController extends Controller {
                 if ($cXML) {
                     $json = json_encode($cXML);
                     $jData = json_decode($json, true);
+                    debugPrint($jData['ServiceClass']);
                     if (!empty($jData['ServiceClass'])) {
-                        foreach ($jData['ServiceClass'] as $res) {
+                        /*foreach ($jData['ServiceClass'] as $res) {
                             $camRes = new \app\models\ClientCampaignResponses();
                             $camRes->client_campaign_id = $model->client_campaign_id;
                             $camRes->message_id = $res['MessageId'];
@@ -361,7 +362,7 @@ class ClientCampaignController extends Controller {
                             $camRes->current_credit = $res['CurrentCredit'];
                             $camRes->created_at = date('Y-m-d H:i:s');
                             $camRes->save();
-                        }
+                        }*/
                         $model->is_publish = 1;
                         $model->save(false);
                         //
