@@ -348,9 +348,10 @@ class ClientCampaignController extends Controller {
                 if ($cXML) {
                     $json = json_encode($cXML);
                     $jData = json_decode($json, true);
-                    debugPrint($jData['ServiceClass']);
+                    //debugPrint($jData['ServiceClass']);
                     if (!empty($jData['ServiceClass'])) {
-                        /*foreach ($jData['ServiceClass'] as $res) {
+                        if (sizeof($jData['ServiceClass']) < 2) {
+                            $res = $jData['ServiceClass'];
                             $camRes = new \app\models\ClientCampaignResponses();
                             $camRes->client_campaign_id = $model->client_campaign_id;
                             $camRes->message_id = $res['MessageId'];
@@ -362,12 +363,26 @@ class ClientCampaignController extends Controller {
                             $camRes->current_credit = $res['CurrentCredit'];
                             $camRes->created_at = date('Y-m-d H:i:s');
                             $camRes->save();
-                        }*/
+                        } else {
+                            foreach ($jData['ServiceClass'] as $res) {
+                                $camRes = new \app\models\ClientCampaignResponses();
+                                $camRes->client_campaign_id = $model->client_campaign_id;
+                                $camRes->message_id = $res['MessageId'];
+                                $camRes->status = $res['Status'];
+                                $camRes->status_text = $res['StatusText'];
+                                $camRes->error_code = $res['ErrorCode'];
+                                $camRes->error_text = !empty($res['ErrorText']) ? $res['ErrorText'] : "";
+                                $camRes->sms_count = $res['SMSCount'];
+                                $camRes->current_credit = $res['CurrentCredit'];
+                                $camRes->created_at = date('Y-m-d H:i:s');
+                                $camRes->save();
+                            }
+                        }
                         $model->is_publish = 1;
                         $model->save(false);
                         //
                         $clientModel = \app\models\Clients::findOne($model->client_id);
-                        $clientModel->total_sms = ($totalSms-count($numbers));
+                        $clientModel->total_sms = ($totalSms - count($numbers));
                         $clientModel->save(false);
                         //
                         return json_encode([
