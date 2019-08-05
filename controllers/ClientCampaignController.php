@@ -348,9 +348,9 @@ class ClientCampaignController extends Controller {
                 if ($cXML) {
                     $json = json_encode($cXML);
                     $jData = json_decode($json, true);
-                    debugPrint($jData['ServiceClass']);exit;
+                    //debugPrint($jData['ServiceClass']);exit;
                     if (!empty($jData['ServiceClass'])) {
-                        if (sizeof($jData['ServiceClass']) < 2) {
+                        if (!empty($jData['ServiceClass']['MessageId'])) {
                             $res = $jData['ServiceClass'];
                             $camRes = new \app\models\ClientCampaignResponses();
                             $camRes->client_campaign_id = $model->client_campaign_id;
